@@ -59,7 +59,7 @@ static int next_filter(char *dst, const char **p) {
 ** Windows
 *******************************************************************************/
 
-#ifdef _WIN32
+#ifdef SFD_TARGET_WINDOWS
 
 #include <windows.h>
 
@@ -167,7 +167,7 @@ const char* sfd_save_dialog(sfd_Options *opt) {
 ** Zenity
 *******************************************************************************/
 
-#ifndef _WIN32
+#ifndef SFD_TARGET_WINDOWS
 
 
 static const char* file_dialog(sfd_Options *opt, int save) {

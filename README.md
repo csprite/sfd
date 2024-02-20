@@ -35,8 +35,7 @@ if (filename) {
 }
 ```
 
-Both functions accept a `sfd_Options` struct pointer with settings for
-the file dialog — All fields of the `sfd_Options` struct are *optional*.
+All fields of the `sfd_Options` struct are *optional* except for `.save`.
 
 | Field           | Description
 |-----------------|-------------------------------------------------------------

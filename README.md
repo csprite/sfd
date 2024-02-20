@@ -1,13 +1,22 @@
 # Simple File Dialog
 A small C library for opening a file dialog on Windows and Linux.
 
+---
+
+## Compiling
+The library comes with `CMakeLists.txt` but you can just put
+**[sfd.c](src/sfd.c?raw=1)** and **[sfd.h](src/sfd.h?raw=1)**
+into an existing project and compiled along with it
+
+### Build Options
+```c
+#define SFD_BACKEND_WIN32  // Only For Windows (Make Sure To Link With 'comdlg32')
+#define SFD_BACKEND_ZENITY // Zenity Backend (Requires Zenity)
+```
+
+---
 
 ## Usage
-**[sfd.c](src/sfd.c?raw=1)** and **[sfd.h](src/sfd.h?raw=1)** should be dropped
-into an existing project and compiled along with it — on Windows `comdlg32`
-should be linked.
-
-The library provides a function for *open* dialogs and one for *save* dialogs:
 
 ```c
 sfd_Options opt = {
@@ -40,7 +49,12 @@ the file dialog — All fields of the `sfd_Options` struct are *optional*.
 If the file dialog is canceled or an error occurs `NULL` is returned.
 `sfd_get_error()` will return an error string in the case of an error.
 
+---
 
 ## License
 This library is free software; you can redistribute it and/or modify it under
 the terms of the MIT license. See [LICENSE](LICENSE) for details.
+
+---
+
+# Thanks

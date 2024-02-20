@@ -20,54 +20,14 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SFD_TARGET_WINDOWS
-	// For popen()/pclose()
-	#define _POSIX_C_SOURCE 2
-	// For realpath()
-	#define _XOPEN_SOURCE 500
-#endif
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
-
 #include "sfd.h"
 
+static const char* last_error;
+static int next_filter(char *dst, const char **p);
 
-static const char *last_error;
+#ifdef SFD_BACKEND_WIN32
 
-
-const char* sfd_get_error(void) {
-	const char *res = last_error;
-	last_error = NULL;
-	return res;
-}
-
-
-static int next_filter(char *dst, const char **p) {
-	int len;
-
-	*p += strspn(*p, "|");
-	if (**p == '\0') {
-		return 0;
-	}
-
-	len = strcspn(*p, "|");
-	memcpy(dst, *p, len);
-	dst[len] = '\0';
-	*p += len;
-
-	return 1;
-}
-
-
-/******************************************************************************
-** Windows
-*******************************************************************************/
-
-#ifdef SFD_TARGET_WINDOWS
-
+#include <stdio.h>
 #include <windows.h>
 
 typedef struct {
@@ -166,17 +126,18 @@ const char* sfd_open_dialog(sfd_Options *opt) {
 	}
 }
 
-#endif
+#endif // SFD_BACKEND_WIN32
 
+#ifdef SFD_BACKEND_ZENITY
 
-/******************************************************************************
-** Zenity
-*******************************************************************************/
-
-#ifndef SFD_TARGET_WINDOWS
+// For popen()/pclose()
+#define _POSIX_C_SOURCE 2
+// For realpath()
+#define _XOPEN_SOURCE 500
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 const char* sfd_open_dialog(sfd_Options* opt) {
 	static char result_buf[2048];
@@ -254,4 +215,28 @@ const char* sfd_open_dialog(sfd_Options* opt) {
 	return NULL;
 }
 
-#endif
+#endif // SFD_BACKEND_ZENITY
+
+const char* sfd_get_error(void) {
+	const char* res = last_error;
+	last_error = NULL;
+	return res;
+}
+
+#include <string.h>
+
+static int next_filter(char *dst, const char **p) {
+	int len;
+
+	*p += strspn(*p, "|");
+	if (**p == '\0') {
+		return 0;
+	}
+
+	len = strcspn(*p, "|");
+	memcpy(dst, *p, len);
+	dst[len] = '\0';
+	*p += len;
+
+	return 1;
+}

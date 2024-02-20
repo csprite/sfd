@@ -16,8 +16,10 @@ target_include_directories(Sfd
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/
 )
 if(WIN32 OR CYGWIN)
-	target_compile_definitions(Sfd PUBLIC SFD_TARGET_WINDOWS)
+	target_compile_definitions(Sfd PUBLIC SFD_BACKEND_WIN32)
 	target_link_libraries(Sfd PUBLIC comdlg32)
+else()
+	target_compile_definitions(Sfd PUBLIC SFD_BACKEND_ZENITY)
 endif()
 
 if(SFD_BUILD_EXAMPLE)

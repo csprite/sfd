@@ -20,6 +20,11 @@
  * IN THE SOFTWARE.
  */
 
+#ifndef SFD_TARGET_WINDOWS
+	// Enable popen/pclose
+	#define _POSIX_C_SOURCE 2
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

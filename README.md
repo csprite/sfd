@@ -10,8 +10,9 @@ into an existing project and compiled along with it
 
 ### Build Options
 ```c
-#define SFD_BACKEND_WIN32  // Only For Windows (Make Sure To Link With 'comdlg32')
-#define SFD_BACKEND_ZENITY // Zenity Backend (Requires Zenity)
+#define SFD_BACKEND_WIN32   // Only For Windows (Make Sure To Link With 'comdlg32')
+#define SFD_BACKEND_ZENITY  // Zenity Backend (Requires zenity)
+#define SFD_BACKEND_KDIALOG // KDialog Backend (Requires kdialog)
 ```
 
 ---

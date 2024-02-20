@@ -116,7 +116,7 @@ const char* sfd_open_dialog(sfd_Options* opt) {
 
 #endif // SFD_BACKEND_WIN32
 
-#ifdef SFD_BACKEND_ZENITY
+#ifndef SFD_BACKEND_WIN32
 
 // For popen()/pclose()
 #define _POSIX_C_SOURCE 2
@@ -126,6 +126,100 @@ const char* sfd_open_dialog(sfd_Options* opt) {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#endif // !SFD_BACKEND_WIN32
+
+#ifdef SFD_BACKEND_KDIALOG
+
+const char* sfd_open_dialog(sfd_Options* opt) {
+	static char result_buf[2048];
+	char buf[2048];
+	char* p;
+	const char *title;
+	FILE *fp;
+	int n, len;
+
+	last_error = NULL;
+
+	// fp = popen("kdialog --version", "r");
+	// if (fp == NULL || pclose(fp) != 0) {
+	// 	last_error = "could not open kdialog";
+	// 	return NULL;
+	// }
+
+	n = sprintf(buf, "kdialog");
+
+	if (opt->save) {
+		n += sprintf(buf + n, " --getsavefilename");
+	} else {
+		n += sprintf(buf + n, " --getopenfilename");
+	}
+
+	if (opt->title) {
+		title = opt->title;
+	} else {
+		title = opt->save ? "Save File" : "Open File";
+	}
+
+	n += sprintf(buf + n, " --title \"%s\"", title);
+
+	if (opt->path && opt->path[0] != '\0') {
+		n += sprintf(buf + n, " \"");
+		p = realpath(opt->path, buf + n);
+		if (p == NULL) {
+			last_error = "call to realpath() failed";
+			return NULL;
+		}
+		n += strlen(buf + n);
+		n += sprintf(buf + n, "/\"");
+	} else {
+		n += sprintf(buf + n, " \".\"");
+	}
+
+	if (opt->filter) {
+		char b[64];
+		const char *p;
+		n += sprintf(buf + n, " \"");
+
+		if (opt->filter_name) {
+			n += sprintf(buf + n, "%s (", opt->filter_name);
+		}
+
+		p = opt->filter;
+		while (next_filter(b, &p)) {
+			n += sprintf(buf + n, "%s ", b);
+		}
+		// Remove The Last Extra Space
+		buf[n - 1] = '\0'; n--;
+
+		if (opt->filter_name) {
+			n += sprintf(buf + n, ")");
+		}
+
+		n += sprintf(buf + n, " | All Files (*)\"");
+	} else {
+		n += sprintf(buf + n, " \"All Files (*)\"");
+	}
+
+
+	fp = popen(buf, "r");
+	len = fread(result_buf, 1, sizeof(result_buf) - 1, fp);
+	pclose(fp);
+
+	if (len > 0) {
+		result_buf[len - 1] = '\0';
+		if (opt->save && opt->extension && !strstr(result_buf, opt->extension)) {
+			sprintf(&result_buf[len - 1], ".%s", opt->extension);
+		}
+		return result_buf;
+	}
+
+	return NULL;
+}
+
+#endif // SFD_BACKEND_KDIALOG
+
+#ifdef SFD_BACKEND_ZENITY
 
 const char* sfd_open_dialog(sfd_Options* opt) {
 	static char result_buf[2048];

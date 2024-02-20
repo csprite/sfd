@@ -21,8 +21,10 @@
  */
 
 #ifndef SFD_TARGET_WINDOWS
-	// Enable popen/pclose
+	// For popen()/pclose()
 	#define _POSIX_C_SOURCE 2
+	// For realpath()
+	#define _XOPEN_SOURCE 500
 #endif
 
 #include <stdio.h>

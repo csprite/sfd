@@ -12,13 +12,12 @@
 #define SFD_VERSION "0.1.0"
 
 typedef struct {
-  const char* title;
-  const char* path;
-  const char* filter_name;
-  const char* filter;
-  const char* extension;
-  int save;
-  int allowMultiple;
+  const char* title;       // Title that will appear in dialog
+  const char* path;        // Default path to open the dialog in
+  const char* filter_name; // Name of filter that will appear in dialog
+  const char* filter;      // File Filter in Format: "*.ext1|*.ext2"
+  const char* extension;   // Default Extension
+  int save;                // Is Save File Dialog? (save == 1)
 } sfd_Options;
 
 #ifdef __cplusplus

@@ -14,7 +14,12 @@ int main(void) {
 	if (filename) {
 		printf("Got file: '%s'\n", filename);
 	} else {
-		printf("Open canceled\n");
+		const char* LastError = sfd_get_error();
+		if (LastError != NULL) {
+			printf("Error: %s\n", LastError);
+		} else {
+			printf("Open canceled\n");
+		}
 	}
 	return 0;
 }

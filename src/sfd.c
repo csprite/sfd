@@ -138,7 +138,7 @@ const char* sfd_open_dialog(sfd_Options* opt) {
 	last_error = NULL;
 
 	fp = popen("zenity --version", "r");
-	if (fp == NULL) {
+	if (fp == NULL || pclose(fp) != 0) {
 		last_error = "could not open zenity";
 		return NULL;
 	}

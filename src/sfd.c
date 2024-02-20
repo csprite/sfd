@@ -23,7 +23,7 @@
 #include "sfd.h"
 
 static const char* last_error;
-static int next_filter(char *dst, const char **p);
+static int next_filter(char* dst, const char** p);
 
 #ifdef SFD_BACKEND_WIN32
 
@@ -35,7 +35,6 @@ typedef struct {
 	void* handle_root;
 	void* handle_first;
 } FindMainWindowInfo;
-
 
 static BOOL CALLBACK _FindMainWin_CB(HWND handle, LPARAM lParam) {
 	FindMainWindowInfo* info = (FindMainWindowInfo*)lParam;
@@ -51,7 +50,6 @@ static BOOL CALLBACK _FindMainWin_CB(HWND handle, LPARAM lParam) {
 	return 1;
 }
 
-
 static HWND _FindMainWin() {
 	FindMainWindowInfo info = {
 		.process_id = GetCurrentProcessId()
@@ -60,8 +58,7 @@ static HWND _FindMainWin() {
 	return info.handle_root;
 }
 
-
-static const char* make_filter_str(sfd_Options *opt) {
+static const char* make_filter_str(sfd_Options* opt) {
 	static char buf[1024];
 	int n;
 
@@ -69,9 +66,9 @@ static const char* make_filter_str(sfd_Options *opt) {
 	n = 0;
 
 	if (opt->filter) {
-		const char *p;
+		const char* p;
 		char b[32];
-		const char *name = opt->filter_name ? opt->filter_name : opt->filter;
+		const char* name = opt->filter_name ? opt->filter_name : opt->filter;
 		n += sprintf(buf + n, "%s", name) + 1;
 
 		p = opt->filter;
@@ -89,8 +86,7 @@ static const char* make_filter_str(sfd_Options *opt) {
 	return buf;
 }
 
-
-static void init_ofn(OPENFILENAME *ofn, sfd_Options *opt) {
+static inline void init_ofn(OPENFILENAME* ofn, sfd_Options* opt) {
 	static char result_buf[2048];
 	result_buf[0] = '\0';
 
@@ -107,23 +103,15 @@ static void init_ofn(OPENFILENAME *ofn, sfd_Options *opt) {
 	ofn->lpstrDefExt      = opt->extension;
 }
 
+const char* sfd_open_dialog(sfd_Options* opt) {
+	last_error = NULL;
 
-const char* sfd_open_dialog(sfd_Options *opt) {
-	if (opt->save) {
-		int ok;
-		OPENFILENAME ofn;
-		last_error = NULL;
-		init_ofn(&ofn, opt);
-		ok = GetSaveFileName(&ofn);
-		return ok ? ofn.lpstrFile : NULL;
-	} else {
-		int ok;
-		OPENFILENAME ofn;
-		last_error = NULL;
-		init_ofn(&ofn, opt);
-		ok = GetOpenFileName(&ofn);
-		return ok ? ofn.lpstrFile : NULL;
-	}
+	OPENFILENAME ofn;
+	init_ofn(&ofn, opt);
+
+	int ok = opt->save ? GetSaveFileName(&ofn) : GetOpenFileName(&ofn);
+
+	return ok ? ofn.lpstrFile : NULL;
 }
 
 #endif // SFD_BACKEND_WIN32
@@ -142,7 +130,7 @@ const char* sfd_open_dialog(sfd_Options *opt) {
 const char* sfd_open_dialog(sfd_Options* opt) {
 	static char result_buf[2048];
 	char buf[2048];
-	char *p;
+	char* p;
 	const char *title;
 	FILE *fp;
 	int n, len;

@@ -142,22 +142,21 @@ static void init_ofn(OPENFILENAME *ofn, sfd_Options *opt) {
 
 
 const char* sfd_open_dialog(sfd_Options *opt) {
-  int ok;
-  OPENFILENAME ofn;
-  last_error = NULL;
-  init_ofn(&ofn, opt);
-  ok = GetOpenFileName(&ofn);
-  return ok ? ofn.lpstrFile : NULL;
-}
-
-
-const char* sfd_save_dialog(sfd_Options *opt) {
-  int ok;
-  OPENFILENAME ofn;
-  last_error = NULL;
-  init_ofn(&ofn, opt);
-  ok = GetSaveFileName(&ofn);
-  return ok ? ofn.lpstrFile : NULL;
+  if (opt->save) {
+    int ok;
+    OPENFILENAME ofn;
+    last_error = NULL;
+    init_ofn(&ofn, opt);
+    ok = GetSaveFileName(&ofn);
+    return ok ? ofn.lpstrFile : NULL;
+  } else {
+    int ok;
+    OPENFILENAME ofn;
+    last_error = NULL;
+    init_ofn(&ofn, opt);
+    ok = GetOpenFileName(&ofn);
+    return ok ? ofn.lpstrFile : NULL;
+  }
 }
 
 #endif
@@ -169,8 +168,10 @@ const char* sfd_save_dialog(sfd_Options *opt) {
 
 #ifndef SFD_TARGET_WINDOWS
 
+#include <stdio.h>
+#include <stdlib.h>
 
-static const char* file_dialog(sfd_Options *opt, int save) {
+const char* sfd_open_dialog(sfd_Options* opt) {
   static char result_buf[2048];
   char buf[2048];
   char *p;
@@ -181,22 +182,21 @@ static const char* file_dialog(sfd_Options *opt, int save) {
   last_error = NULL;
 
   fp = popen("zenity --version", "r");
-  if (fp == NULL || pclose(fp) != 0) {
+  if (fp == NULL) {
     last_error = "could not open zenity";
     return NULL;
   }
 
-
   n = sprintf(buf, "zenity --file-selection");
 
-  if (save) {
+  if (opt->save) {
     n += sprintf(buf + n, " --save --confirm-overwrite");
   }
 
   if (opt->title) {
     title = opt->title;
   } else {
-    title = save ? "Save File" : "Open File";
+    title = opt->save ? "Save File" : "Open File";
   }
 
   n += sprintf(buf + n, " --title=\"%s\"", title);
@@ -238,7 +238,7 @@ static const char* file_dialog(sfd_Options *opt, int save) {
 
   if (len > 0) {
     result_buf[len - 1] = '\0';
-    if (save && opt->extension && !strstr(result_buf, opt->extension)) {
+    if (opt->save && opt->extension && !strstr(result_buf, opt->extension)) {
       sprintf(&result_buf[len - 1], ".%s", opt->extension);
     }
     return result_buf;
@@ -246,16 +246,5 @@ static const char* file_dialog(sfd_Options *opt, int save) {
 
   return NULL;
 }
-
-
-const char* sfd_open_dialog(sfd_Options *opt) {
-  return file_dialog(opt, 0);
-}
-
-
-const char* sfd_save_dialog(sfd_Options *opt) {
-  return file_dialog(opt, 1);
-}
-
 
 #endif

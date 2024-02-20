@@ -5,6 +5,8 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
+option(SFD_BUILD_EXAMPLE "Build example" ON)
+
 project(Sfd C)
 add_library(
 	Sfd STATIC
@@ -16,4 +18,10 @@ target_include_directories(Sfd
 if(WIN32 OR CYGWIN)
 	target_compile_definitions(Sfd PUBLIC SFD_TARGET_WINDOWS)
 	target_link_libraries(Sfd PUBLIC comdlg32)
+endif()
+
+if(SFD_BUILD_EXAMPLE)
+	project(Sfd_Example C)
+	add_executable(Sfd_Example ${CMAKE_CURRENT_SOURCE_DIR}/src/example.c)
+	target_link_libraries(Sfd_Example PUBLIC Sfd)
 endif()

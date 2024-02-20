@@ -14,6 +14,7 @@ sfd_Options opt = {
   .title        = "Open Image File",
   .filter_name  = "Image File",
   .filter       = "*.png|*.jpg",
+  .save         = 0
 };
 
 const char *filename = sfd_open_dialog(&opt);
@@ -34,6 +35,7 @@ the file dialog — All fields of the `sfd_Options` struct are *optional*.
 | `.path`         | Default directory
 | `.filter_name`  | Name used to describe the file filter
 | `.filter`       | File filters separated by <code>&#124;</code>
+| `.save`         | Type of the dialog, `0` = Open & `1` = Save
 
 If the file dialog is canceled or an error occurs `NULL` is returned.
 `sfd_get_error()` will return an error string in the case of an error.

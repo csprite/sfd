@@ -15,5 +15,5 @@ target_include_directories(Sfd
 )
 if(WIN32 OR CYGWIN)
 	target_compile_definitions(Sfd PUBLIC SFD_TARGET_WINDOWS)
-	target_link_libraries(Sfd_Test PUBLIC comdlg32)
+	target_link_libraries(Sfd PUBLIC comdlg32)
 endif()
